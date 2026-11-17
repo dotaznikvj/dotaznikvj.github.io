@@ -36,13 +36,15 @@
   .progress > div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
   .q { padding: 16px 0; border-top: 1px solid var(--border); }
   .q:first-of-type { border-top: 0; padding-top: 0; }
-  .q-title { font-weight: 600; margin-bottom: 4px; }
+  .q-title { font-weight: 600; margin-bottom: 4px; float: left; width: 100%; }
+  .q > :not(legend) { clear: both; }
   .q-title .req { color: var(--error); margin-left: 2px; }
   .q-help { color: var(--muted); font-size: .9rem; margin-bottom: 8px; }
   .opt { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
   .opt:hover { background: var(--accent-soft); }
   .opt input { margin-top: 4px; accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
-  input[type=text].other-input { display: block; margin: 4px 0 0 38px; width: calc(100% - 38px); }
+  .other-wrap { padding: 4px 0 0 38px; }
+  .other-wrap input { display: block; width: 100%; max-width: 100%; margin: 0; }
   input[type=text], textarea {
     width: 100%; padding: 10px 12px; font: inherit; color: var(--text);
     background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
@@ -372,7 +374,7 @@ function qHtml(q) {
     if (q.other) {
       const oc = sel.includes("__other");
       body += `<label class="opt"><input type="${t}" name="${q.id}" value="__other" ${oc ? "checked" : ""}><span>Jiné:</span></label>
-        <input type="text" class="other-input" data-other="${q.id}" value="${esc(answers[q.id + "_jine"] || "")}" ${oc ? "" : "disabled"} maxlength="200" aria-label="Jiné – upřesněte">`;
+        <div class="other-wrap"><input type="text" class="other-input" data-other="${q.id}" value="${esc(answers[q.id + "_jine"] || "")}" ${oc ? "" : "disabled"} maxlength="200" aria-label="Jiné – upřesněte"></div>`;
     }
   } else if (q.type === "scale") {
     let opts = "";
