@@ -42,7 +42,7 @@
   .opt { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
   .opt:hover { background: var(--accent-soft); }
   .opt input { margin-top: 4px; accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
-  .other-input { margin: 4px 0 0 38px; width: calc(100% - 38px); }
+  input[type=text].other-input { display: block; margin: 4px 0 0 38px; width: calc(100% - 38px); }
   input[type=text], textarea {
     width: 100%; padding: 10px 12px; font: inherit; color: var(--text);
     background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
@@ -118,7 +118,7 @@ const CONFIG = {
   THANKS: "Děkuji za vyplnění! Vaše odpovědi byly uloženy. Okno nyní můžete zavřít.",
 };
 
-/* Text s kontakty na pomoc – zobrazí se v dotazníku i na závěrečné stránce. */
+/* Text s kontakty na pomoc – zobrazí se na konci části 4 (za otázkou o dopadech na zdraví). */
 const SUPPORT_HTML = `<strong>Nemusíte na to být sami.</strong> Pokud procházíte náročným obdobím nebo se Vás tato témata osobně dotýkají, můžete kdykoliv vyhledat anonymní a bezplatnou podporu. Obrátit se můžete přímo na <strong>školního psychologa či výchovného poradce</strong> na Vaší škole, využít nonstop <strong>Linku bezpečí</strong> na telefonu <a href="tel:116111">116&nbsp;111</a> (případně online chat na <a href="https://www.linkabezpeci.cz" target="_blank" rel="noopener">linkabezpeci.cz</a>), nebo kontaktovat <strong>Linku první psychické pomoci</strong> na čísle <a href="tel:116123">116&nbsp;123</a>. Při problémech s vnímáním vlastního těla či poruchách příjmu potravy nabízí odbornou pomoc také <strong>Centrum Anabell</strong> (<a href="https://www.anabell.cz" target="_blank" rel="noopener">anabell.cz</a>).`;
 
 /* =====================================================================
@@ -237,19 +237,23 @@ const SECTIONS = [
                   "Nespokojenost se vzhledem, stud za vlastní tělo", "Žádné zásadní dopady to na mě nemělo", "Nechci odpovídat"],
         exclusive: ["Žádné zásadní dopady to na mě nemělo", "Nechci odpovídat"] },
       { id: "bs_dopady", type: "multi", required: true, other: true, showIf: bodyShamingAno,
-        title: "Zanechalo toto období negativní dopad na Vaše zdraví nebo chování?",
+        title: "Jaké konkrétní potíže nebo změny v chování jste v souvislosti s tímto obdobím zaznamenal/a?",
         help: "Můžete označit více odpovědí.",
-        options: ["Problémy se spánkem, chronická únava", "Myšlenky na sebepoškozování nebo pokusy o něj",
+        options: ["Problémy se spánkem nebo chronická únava",
+                  "Změnu ve stravovacích návycích (např. omezování jídla, přejídání)",
+                  "Změnu stylu oblékání za účelem zakrývání postavy (nošení volného oblečení apod.)",
+                  "Myšlenky na sebepoškozování",
+                  "Sebepoškozující jednání",
                   "Užívání návykových látek (alkohol, cigarety, e-cigarety, jiné látky) jako únik před stresem",
                   "Vyhledání odborné pomoci (psycholog, psychiatr) / užívání předepsané medikamentózní léčby",
-                  "Ne, nic z toho jsem nezaznamenal/a", "Nechci odpovídat"],
-        exclusive: ["Ne, nic z toho jsem nezaznamenal/a", "Nechci odpovídat"] },
+                  "Žádné z výše uvedených potíží jsem nezaznamenal/a", "Nechci odpovídat"],
+        exclusive: ["Žádné z výše uvedených potíží jsem nezaznamenal/a", "Nechci odpovídat"] },
+      { id: "info_pomoc", type: "info", html: SUPPORT_HTML },
     ],
   },
   {
     title: "Stravování, škola a odborná praxe",
     questions: [
-      { id: "info_pomoc", type: "info", html: SUPPORT_HTML },
       { id: "strava", type: "multi", required: true,
         title: "Zaznamenal/a jste u sebe někdy v souvislosti s vnímáním vlastního těla potřebu uchýlit se k následujícím stravovacím opatřením nebo chování?",
         help: "Můžete označit více odpovědí.",
@@ -258,10 +262,12 @@ const SECTIONS = [
                   "Enormní zvýšení fyzické námahy a cvičení s úpravou stravování",
                   "Ne, nic z toho jsem u sebe nezaznamenal/a", "Nechci odpovídat"],
         exclusive: ["Ne, nic z toho jsem u sebe nezaznamenal/a", "Nechci odpovídat"] },
-      { id: "skola_tema", type: "single", required: true,
-        title: "Setkal/a jste se s tématem body shamingu, vnímání vlastního těla nebo poruch příjmu potravy v rámci výuky či jiných školních aktivit na Vaší střední škole?",
+      { id: "skola_tema", type: "multi", required: true,
+        title: "Setkal/a jste se s tématem body shamingu, vnímání vlastního těla nebo poruch příjmu potravy v rámci výuky či jiných školních aktivit na Vaší škole?",
+        help: "Můžete označit více odpovědí.",
         options: ["Ano, přímo v běžné výuce (v rámci vyučovacích předmětů)", "Ano, v rámci preventivního programu / besedy / přednášky",
-                  "Ne, na toto téma jsme ve škole nemluvili", "Nevím"] },
+                  "Ne, na toto téma jsme ve škole nemluvili", "Nevím"],
+        exclusive: ["Ne, na toto téma jsme ve škole nemluvili", "Nevím"] },
       { id: "uniforma", type: "single", required: true, other: true,
         title: "Máte pocit, že povinné nošení uniforem na odborné praxi v nemocničních zařízeních ovlivňuje to, jak vnímáte své vlastní tělo?",
         options: ["Ano, spíše negativně (uniforma je nepohodlná, zvýrazňuje nedokonalosti, cítím tlak na vzhled)",
@@ -543,7 +549,6 @@ function done(demo) {
   app.innerHTML = `
     <div class="progress"><div style="width:100%"></div></div>
     <div class="card"><h2>Hotovo</h2><p>${esc(CONFIG.THANKS)}</p>
-    <div class="info-box">${SUPPORT_HTML}</div>
     ${demo ? `<div class="notice error">Zkušební režim – nic nebylo uloženo. Odeslaná data najdete v konzoli prohlížeče.</div>` : ""}</div>`;
   window.scrollTo(0, 0);
 }
