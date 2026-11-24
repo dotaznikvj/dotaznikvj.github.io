@@ -138,7 +138,8 @@ const SUPPORT_HTML = `<strong>Nemusíte na to být sami.</strong> Pokud procház
    Společné: id (= název sloupce v tabulce), title, help, required,
              showIf: odpovedi => true/false (podmíněné zobrazení)
    ===================================================================== */
-const DULEZITOST = { columns: ["1", "2", "3", "4", "5"], minLabel: "1 = zcela nepodstatné", maxLabel: "5 = extrémně důležité" };
+const DULEZITOST = { columns: ["1", "2", "3", "4", "5"], numeric: true };
+const DULEZITOST_POPIS = "1 = zcela nepodstatné, 2 = spíše nepodstatné, 3 = neutrální, 4 = spíše podstatné, 5 = zcela podstatné";
 const bodyShamingAno = a => a.bs_zkusenost === "Ano, jednou nebo několikrát" || a.bs_zkusenost === "Ano, opakovaně";
 
 const SECTIONS = [
@@ -180,7 +181,7 @@ const SECTIONS = [
     questions: [
       { id: "ideal_zena", type: "matrix", required: true, ...DULEZITOST,
         title: "Jak podle Vás současná společnost vnímá ideál ženské krásy?",
-        help: "Označte na škále od 1 do 5, jak moc jsou pro tento ideál důležité následující rysy (1 = zcela nepodstatné, 5 = extrémně důležité).",
+        help: `Označte na škále od 1 do 5, jak moc jsou pro tento ideál důležité následující rysy (${DULEZITOST_POPIS}).`,
         rows: [
           { id: "ideal_zena_stihla", text: "Velmi štíhlá postava" },
           { id: "ideal_zena_sportovni", text: "Tělo s pevnými svaly / sportovní postava" },
@@ -190,7 +191,7 @@ const SECTIONS = [
         ] },
       { id: "ideal_muz", type: "matrix", required: true, ...DULEZITOST,
         title: "Jak podle Vás současná společnost vnímá ideál mužské krásy?",
-        help: "Označte na škále od 1 do 5, jak moc jsou důležité následující rysy (1 = zcela nepodstatné, 5 = extrémně důležité).",
+        help: `Označte na škále od 1 do 5, jak moc jsou důležité následující rysy (${DULEZITOST_POPIS}).`,
         rows: [
           { id: "ideal_muz_svaly", text: "Svalnatá, vypracovaná postava (obliba posilování)" },
           { id: "ideal_muz_ramena", text: "Široká ramena a vyrýsovaný hrudník" },
@@ -226,11 +227,12 @@ const SECTIONS = [
           { id: "bs_prostredi_rodina", text: "V rodině / od příbuzných" },
           { id: "bs_prostredi_pratele", text: "Mezi přáteli / ve volném čase" },
         ] },
-      { id: "bs_site", type: "multi", required: true, other: true,
-        showIf: a => bodyShamingAno(a) && Number(a.bs_prostredi_internet) > 1,
+      { id: "bs_site", type: "multi", required: true, other: true, showIf: bodyShamingAno,
         title: "Na kterých sociálních sítích jste se s body shamingem nejčastěji setkal/a?",
         help: "Můžete označit více odpovědí.",
-        options: ["YouTube", "Facebook", "Instagram", "Snapchat", "TikTok"] },
+        options: ["YouTube", "Facebook", "Instagram", "Snapchat", "TikTok",
+                  "Nikdy jsem se na sociálních sítích s body shamingem nesetkal/a"],
+        exclusive: ["Nikdy jsem se na sociálních sítích s body shamingem nesetkal/a"] },
       { id: "bs_pocity", type: "multi", required: true, other: true, showIf: bodyShamingAno,
         title: "Pokud jste byl/a terčem posměchu, jaké pocity nebo dopady to ve Vás zanechalo?",
         help: "Můžete označit více odpovědí.",
@@ -382,14 +384,14 @@ function qHtml(q) {
     body = `<div class="scale" role="radiogroup">${opts}</div>
       <div class="scale-ends"><span>${esc(q.minLabel || "")}</span><span>${esc(q.maxLabel || "")}</span></div>`;
   } else if (q.type === "matrix") {
-    const numeric = !!(q.minLabel || q.maxLabel);
+    const numeric = !!(q.numeric || q.minLabel || q.maxLabel);
     body = q.rows.map(r => `
       <div class="matrix-row${numeric ? " numeric" : ""}" data-row="${r.id}">
         <div class="stmt">${esc(r.text)}</div>
         <div class="scale" role="radiogroup" aria-label="${esc(r.text)}">
           ${q.columns.map((c, i) => `<label title="${esc(c)}"><input type="radio" name="${r.id}" value="${i + 1}" ${String(answers[r.id]) === String(i + 1) ? "checked" : ""}>${esc(c)}</label>`).join("")}
         </div>
-        ${numeric ? `<div class="scale-ends"><span>${esc(q.minLabel || "")}</span><span>${esc(q.maxLabel || "")}</span></div>` : ""}
+        ${(q.minLabel || q.maxLabel) ? `<div class="scale-ends"><span>${esc(q.minLabel || "")}</span><span>${esc(q.maxLabel || "")}</span></div>` : ""}
       </div>`).join("");
   } else if (q.type === "text") {
     body = `<input type="text" name="${q.id}" value="${esc(v || "")}" maxlength="300">`;
