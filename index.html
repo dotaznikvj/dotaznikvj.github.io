@@ -138,7 +138,7 @@ const SUPPORT_HTML = `<strong>Nemusíte na to být sami.</strong> Pokud procház
    Společné: id (= název sloupce v tabulce), title, help, required,
              showIf: odpovedi => true/false (podmíněné zobrazení)
    ===================================================================== */
-const DULEZITOST = { columns: ["1", "2", "3", "4", "5"], numeric: true };
+const DULEZITOST = { columns: ["1", "2", "3", "4", "5"], numeric: true, minLabel: "1 = zcela nepodstatné", maxLabel: "5 = zcela podstatné" };
 const DULEZITOST_POPIS = "1 = zcela nepodstatné, 2 = spíše nepodstatné, 3 = neutrální, 4 = spíše podstatné, 5 = zcela podstatné";
 const bodyShamingAno = a => a.bs_zkusenost === "Ano, jednou nebo několikrát" || a.bs_zkusenost === "Ano, opakovaně";
 
